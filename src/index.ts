@@ -1,0 +1,136 @@
+import { Database } from "bun:sqlite";
+
+// 
+// TAMRIN 1
+// 
+const db1 = new Database("t1db.sqlite", { create: true });
+
+const query1db1 = db1.query(`
+CREATE TABLE CHEFS (
+    NAME NVARCHAR2(128) NOT NULL,
+    CONSTRAINT PK_CHEFS PRIMARY KEY ( NAME )
+);
+`);
+const query2db1 = db1.query(`
+CREATE TABLE FOODS (
+    NAME      NVARCHAR2(64) NOT NULL,
+    CHEF_NAME NVARCHAR2(128) NOT NULL,
+    CONSTRAINT PK_FOODS PRIMARY KEY ( NAME ),
+    CONSTRAINT FK_FOODS_CHEFS FOREIGN KEY ( CHEF_NAME )
+        REFERENCES CHEFS ( NAME )
+);
+`);
+const query3db1 = db1.query(`
+CREATE TABLE INGREDIENTS (
+    NAME      NVARCHAR2(64) NOT NULL,
+    FOOD_NAME NVARCHAR2(64) NOT NULL,
+    CONSTRAINT PK_INGREDIENTS PRIMARY KEY ( NAME ),
+    CONSTRAINT FK_INGREDIENTS_FOODS FOREIGN KEY ( FOOD_NAME )
+        REFERENCES FOODS ( NAME )
+);
+`);
+query1db1.run();
+query2db1.run();
+query3db1.run();
+
+db1.close(true);
+
+// 
+// TAMRIN 2
+// 
+const db2 = new Database("t2db.sqlite", { create: true });
+
+const query1db2 = db2.query(`
+CREATE TABLE MUSEUMS (
+    NAME NVARCHAR2(128) NOT NULL,
+    CITY NVARCHAR2(128) NOT NULL,
+    CONSTRAINT PK_MUSEUMS PRIMARY KEY ( NAME,
+                                        CITY )
+);
+`);
+const query2db2 = db2.query(`
+CREATE TABLE ANTIQUITIES (
+    TITLE  NVARCHAR2(128) NOT NULL,
+    YEARS   DATE NOT NULL,
+    M_NAME NVARCHAR2(128) NOT NULL,
+    M_CITY NVARCHAR2(128) NOT NULL,
+    CONSTRAINT PK_ANTIQUITIES PRIMARY KEY ( TITLE,
+                                            YEARS ),
+    CONSTRAINT FK_ANTIQUITIES_MUSEUMS_NAME FOREIGN KEY ( M_NAME )
+        REFERENCES MUSEUMS ( NAME ),
+    CONSTRAINT FK_ANTIQUITIES_MUSEUMS_CITY FOREIGN KEY ( M_CITY )
+        REFERENCES MUSEUMS ( CITY )
+);
+`);
+const query3db2 = db2.query(`
+CREATE TABLE DISPLAY_ANTIQUITIES_MUSEUMS (
+    A_TITLE NVARCHAR2(128) NOT NULL,
+    A_YEARS DATE NOT NULL,
+    M_NAME  NVARCHAR2(128) NOT NULL,
+    M_CITY  NVARCHAR2(128) NOT NULL,
+    CONSTRAINT PK_ANTIQUITIES PRIMARY KEY ( A_TITLE,
+                                            A_YEARS ),
+    CONSTRAINT FK_DISPLAY_ANTIQUITIES_TITLE FOREIGN KEY ( A_TITLE )
+        REFERENCES ANTIQUITIES ( TITLE ),
+    CONSTRAINT FK_DISPLAY_ANTIQUITIES_YEARS FOREIGN KEY ( A_YEARS )
+        REFERENCES ANTIQUITIES ( YEAR ),
+    CONSTRAINT FK_DISPLAY_MUSEUMS_NAME FOREIGN KEY ( M_NAME )
+        REFERENCES MUSEUMS ( NAME ),
+    CONSTRAINT FK_DISPLAY_MUSEUMS_CITY FOREIGN KEY ( M_CITY )
+        REFERENCES MUSEUMS ( CITY )
+);
+`);
+query1db2.run();
+query2db2.run();
+query3db2.run();
+
+db2.close(true);
+
+
+// // TAMRIN 3
+const db3 = new Database("t3db.sqlite", { create: true });
+
+const query1db3 = db3.query(`
+CREATE TABLE STARS (
+    NAME       NVARCHAR2(128) NOT NULL,
+    BRIGHTNESS NUMBER NOT NULL,
+    METALICITY NUMBER NOT NULL,
+    CONSTRAINT PK_STARS PRIMARY KEY ( NAME )
+);
+`);
+const query2db3 = db3.query(`
+CREATE TABLE DIETIES (
+    NAME      NVARCHAR2(128) NOT NULL,
+    MYTHOLOGY NVARCHAR2(128) NOT NULL,
+    CONSTRAINT PK_DIETIES PRIMARY KEY ( NAME,
+                                        MYTHOLOGY )
+);
+`);
+const query3db3 = db3.query(`
+CREATE TABLE PLANETS (
+    NAME         NVARCHAR2(128) NOT NULL,
+    DIAMETER     NUMBER NOT NULL,
+    MASS         NUMBER NOT NULL,
+    STAR_NAME    NVARCHAR2(128) NOT NULL,
+    ORBIT_PERIOD NUMBER NOT NULL,
+    CONSTRAINT PK_PLANETS PRIMARY KEY ( NAME ),
+    CONSTRAINT FK_ORBIT_PLANETS_STARS FOREIGN KEY ( STAR_NAME )
+        REFERENCES STARS ( NAME )
+);
+`);
+const query4db3 = db3.query(`
+CREATE TABLE SATELITES (
+    NAME         NVARCHAR2(128) NOT NULL,
+    PLANET_NAME  NVARCHAR2(128) NOT NULL,
+    ORBIT_PERIOD NUMBER NOT NULL,
+    CONSTRAINT PK_PLANETS PRIMARY KEY ( NAME ),
+    CONSTRAINT FK_ORBIT_PLANETS_SATELITES FOREIGN KEY ( PLANET_NAME )
+        REFERENCES PLANETS ( NAME )
+);
+`);
+query1db3.run();
+query2db3.run();
+query3db3.run();
+query4db3.run();
+
+db3.close(true);
